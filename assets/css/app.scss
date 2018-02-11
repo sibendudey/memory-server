@@ -1,0 +1,17 @@
+/* This file is for your main application css. */
+
+@import "bootstrap";
+
+.side { padding: 4ex; text-align: center; }
+h1 { text-align: center; }
+
+
+.row {
+  background: lightgrey;
+  border: 1px solid grey;
+  height: 30px;
+}
+
+.border {
+  border-right: 1px solid black;
+}

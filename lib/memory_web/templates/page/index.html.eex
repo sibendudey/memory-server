@@ -1,0 +1,9 @@
+<div class="row2">
+  <div class="col2">
+    <h1 id="index-page">Join a Game</h1>
+    <p><input type="text" id="game-input"></p>
+    <p><a href="" onClick="this.href='/memory/' + document.getElementById('game-input').value">Enter</a>
+  </div>
+</div>
+
+
