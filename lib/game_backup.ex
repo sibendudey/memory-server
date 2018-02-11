@@ -12,6 +12,8 @@ defmodule Memory.GameBackup do
   end
 
   def load(name) do
+    IO.puts "Name is"
+    IO.puts name
     Agent.get __MODULE__, fn state ->
       Map.get(state, name)
     end

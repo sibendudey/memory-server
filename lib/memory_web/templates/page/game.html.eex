@@ -1,6 +1,6 @@
 <div class="row2">
   <div class="col2">
-    <h1>Hangman Game: <%= @game %></h1>
+    <h1>Memory Game: Welcome <%= @game %></h1>
     <script>
       window.gameName = "<%= @game %>";
     </script>
