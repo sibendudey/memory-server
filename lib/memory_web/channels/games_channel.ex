@@ -18,7 +18,6 @@ defmodule MemoryWeb.GamesChannel do
   def handle_in("guess", %{ "clicked" => guess , "prev" => setPrevValue?}, socket) do
     map = socket.assigns[:game]
     game = Game.nextState(map, guess, setPrevValue?)
-    IO.inspect game
     socket = assign(socket, :game, game)
     GameBackup.save(socket.assigns[:name], game)
     {:reply, {:ok, %{ "game" => game}}, socket}

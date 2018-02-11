@@ -49,7 +49,7 @@ class Game extends React.Component {
         if (this.state.prev) {
             if (prevValue.tile.value != this.state.prev.tile.value) {
                 prevValue.tile.display = true;
-                this.setState(this.state, function (){
+                this.setState(this.state, function () {
                     let thisObj = this;
                     setTimeout(function () {
                         thisObj.channel.push("guess", {clicked: thisObj.state.prev, prev: false})
@@ -62,9 +62,10 @@ class Game extends React.Component {
                     .receive("ok", (view) => this.gotView(view));
             }
         }
-        else    {
+        else {
             this.channel.push("guess", {clicked: prevValue, prev: true})
-                .receive("ok", (view) => this.gotView(view));}
+                .receive("ok", (view) => this.gotView(view));
+        }
     }
 }
 
@@ -94,8 +95,12 @@ class Table extends React.Component {
     render() {
         return (
             this.state.arrayElements.map((elm, i) => {
-                return <Row>{elm.map((tile, j) => <Tile tileObj={tile} location={{i: i, j: j}}
-                                                        rootObj={this.props.rootObj}/>)}</Row>
+                return (
+                    <Row>
+                        {elm.map((tile, j) =>
+                            <Tile tileObj={tile} location={{i: i, j: j}}
+                                  rootObj={this.props.rootObj}/>)}
+                    </Row>);
             })
         );
     }
@@ -116,8 +121,7 @@ class Tile extends React.Component {
             <div className="col-3 border"
                  onClick={() => !this.state.tile.display &&
                      this.props.rootObj.state.clickable &&
-                     this.props.rootObj.handleClick(this.state)
-                    }>
+                     this.props.rootObj.handleClick(this.state)}>
                 {this.state.tile.display ? this.state.tile.value : " "}
             </div>
         );
