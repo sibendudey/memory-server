@@ -10,32 +10,31 @@ defmodule Memory.Game do
   def new do
     %{
       :score => 0,
-      :arrayElements => [
+      :arrayElements => Enum.shuffle([Enum.shuffle(
         [
           %{value: "A", display: false},
           %{value: "D", display: false},
           %{value: "H", display: false},
           %{value: "G", display: false}
-        ],
-        [
+        ]),
+        Enum.shuffle([
           %{value: "B", display: false},
           %{value: "D", display: false},
           %{value: "E", display: false},
           %{value: "F", display: false}
-        ],
-        [
+        ]),
+        Enum.shuffle([
           %{value: "F", display: false},
           %{value: "H", display: false},
           %{value: "A", display: false},
           %{value: "B", display: false}
-        ],
-        [
+        ]),
+        Enum.shuffle([
           %{value: "C", display: false},
           %{value: "E", display: false},
           %{value: "G", display: false},
           %{value: "C", display: false}
-        ]
-      ],
+        ])]),
       :clickable => true
     }
 
@@ -50,7 +49,7 @@ defmodule Memory.Game do
     IO.inspect key
     arrayElements = Map.get(game, :arrayElements)
     index1 = Map.get(Map.get(key, "location"), "i")
-    index2 = Map.get(Map.get(key, "location"), "i")
+    index2 = Map.get(Map.get(key, "location"), "j")
     IO.inspect index1
     IO.inspect index2
 
@@ -77,7 +76,8 @@ defmodule Memory.Game do
     #    element[j].push(%{value: Map.get(Map.get(key, :tile), :value), display: true})
     #    IO.puts element[j]
     Map.update!(game, :arrayElements, fn (x) -> arrayElements end)
-    |> Map.update(:prev, key, fn (x) -> x end)
+    |> Map.update!(:score, fn (x) -> x + 1 end)
+    |> Map.update(:prev, key, fn (x) -> key end)
   end
 
   def nextState(game, key, false) do
@@ -85,7 +85,7 @@ defmodule Memory.Game do
     IO.inspect key
     arrayElements = Map.get(game, :arrayElements)
     index1 = Map.get(Map.get(key, "location"), "i")
-    index2 = Map.get(Map.get(key, "location"), "i")
+    index2 = Map.get(Map.get(key, "location"), "j")
     IO.inspect index1
 
     arrayElements = arrayElements
@@ -112,6 +112,7 @@ defmodule Memory.Game do
     #    element[j].push(%{value: Map.get(Map.get(key, :tile), :value), display: true})
     #    IO.puts element[j]
     Map.update!(game, :arrayElements, fn (x) -> arrayElements end)
-    |> Map.delete(:prev)
+    |> Map.update!(:score, fn (x) -> x + 1 end)
+    |> Map.update!(:prev, fn (x) -> false end)
   end
 end

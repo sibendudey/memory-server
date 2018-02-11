@@ -7,26 +7,26 @@ export default function run_demo(root, channel) {
 }
 
 
-const initialState = {
-    score: 0,
-    arrayElements: [[{value: 'A', display: false}, {value: 'D', display: false}, {
-        value: 'H',
-        display: false
-    }, {value: 'G', display: false}],
-        [{value: 'B', display: false}, {value: 'D', display: false}, {value: 'E', display: false}, {
-            value: 'F',
-            display: false
-        }],
-        [{value: 'F', display: false}, {value: 'H', display: false}, {value: 'A', display: false}, {
-            value: 'B',
-            display: false
-        }],
-        [{value: 'C', display: false}, {value: 'G', display: false}, {value: 'E', display: false}, {
-            value: 'C',
-            display: false
-        }]],
-    clickable: true
-};
+// const initialState = {
+//     score: 0,
+//     arrayElements: [[{value: 'A', display: false}, {value: 'D', display: false}, {
+//         value: 'H',
+//         display: false
+//     }, {value: 'G', display: false}],
+//         [{value: 'B', display: false}, {value: 'D', display: false}, {value: 'E', display: false}, {
+//             value: 'F',
+//             display: false
+//         }],
+//         [{value: 'F', display: false}, {value: 'H', display: false}, {value: 'A', display: false}, {
+//             value: 'B',
+//             display: false
+//         }],
+//         [{value: 'C', display: false}, {value: 'G', display: false}, {value: 'E', display: false}, {
+//             value: 'C',
+//             display: false
+//         }]],
+//     clickable: true
+// };
 
 
 class Game extends React.Component {
@@ -46,7 +46,14 @@ class Game extends React.Component {
     }
 
     gotView(view) {
-        this.setState(view.game);
+        // console.log("Before this view is called");
+        // console.log(this.state);
+        // console.log("This is sent by the server");
+        // console.log(view.game);
+        this.setState(view.game, function() {
+            console.log("After this view is called");
+            console.log(this.state);
+        });
     }
 
     /* The shuffling of array logic has been referenced from stackoverflow.com */
@@ -60,6 +67,8 @@ class Game extends React.Component {
     }
 
     render() {
+        console.log("Render inside root");
+        console.log(this.state);
         return (
             <Container>
                 <Table rootObj={this}/>
@@ -101,24 +110,28 @@ class Game extends React.Component {
 
     handleClick(prevValue) {
         if (this.state.prev) {
-            if (prevValue.tile.value != this.state.prev.value) {
+            console.log("This state previous is present");
+            if (prevValue.tile.value != this.state.prev.tile.value) {
+                console.log("Values not matched");
                 prevValue.tile.display = true;
-                this.setState(this.state, function () {
+                this.setState(this.state, function (){
                     let thisObj = this;
                     setTimeout(function () {
                         thisObj.channel.push("guess", {clicked: thisObj.state.prev, prev: false})
                             .receive("ok", (view) => thisObj.gotView(view));
                     }, 1000)
-                });
+                })
             }
             else {
+                console.log("Values matched");
                 this.channel.push("guess", {clicked: prevValue, prev: false})
                     .receive("ok", (view) => this.gotView(view));
             }
         }
-        else
+        else    {
+            console.log("This state previous is absent");
             this.channel.push("guess", {clicked: prevValue, prev: true})
-                .receive("ok", (view) => this.gotView(view));
+                .receive("ok", (view) => this.gotView(view));}
     }
 }
 
@@ -146,7 +159,7 @@ class Table extends React.Component {
     }
 
     render() {
-        console.log(this.state.arrayElements);
+
         return (
             this.state.arrayElements.map((elm, i) => {
                 return <Row>{elm.map((tile, j) => <Tile tileObj={tile} location={{i: i, j: j}}

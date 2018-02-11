@@ -41252,23 +41252,27 @@ function run_demo(root, channel) {
     _reactDom2.default.render(_react2.default.createElement(Game, { channel: channel }), root);
 }
 
-var initialState = {
-    score: 0,
-    arrayElements: [[{ value: 'A', display: false }, { value: 'D', display: false }, {
-        value: 'H',
-        display: false
-    }, { value: 'G', display: false }], [{ value: 'B', display: false }, { value: 'D', display: false }, { value: 'E', display: false }, {
-        value: 'F',
-        display: false
-    }], [{ value: 'F', display: false }, { value: 'H', display: false }, { value: 'A', display: false }, {
-        value: 'B',
-        display: false
-    }], [{ value: 'C', display: false }, { value: 'G', display: false }, { value: 'E', display: false }, {
-        value: 'C',
-        display: false
-    }]],
-    clickable: true
-};
+// const initialState = {
+//     score: 0,
+//     arrayElements: [[{value: 'A', display: false}, {value: 'D', display: false}, {
+//         value: 'H',
+//         display: false
+//     }, {value: 'G', display: false}],
+//         [{value: 'B', display: false}, {value: 'D', display: false}, {value: 'E', display: false}, {
+//             value: 'F',
+//             display: false
+//         }],
+//         [{value: 'F', display: false}, {value: 'H', display: false}, {value: 'A', display: false}, {
+//             value: 'B',
+//             display: false
+//         }],
+//         [{value: 'C', display: false}, {value: 'G', display: false}, {value: 'E', display: false}, {
+//             value: 'C',
+//             display: false
+//         }]],
+//     clickable: true
+// };
+
 
 var Game = function (_React$Component) {
     _inherits(Game, _React$Component);
@@ -41295,7 +41299,14 @@ var Game = function (_React$Component) {
     _createClass(Game, [{
         key: 'gotView',
         value: function gotView(view) {
-            this.setState(view.game);
+            // console.log("Before this view is called");
+            // console.log(this.state);
+            // console.log("This is sent by the server");
+            // console.log(view.game);
+            this.setState(view.game, function () {
+                console.log("After this view is called");
+                console.log(this.state);
+            });
         }
 
         /* The shuffling of array logic has been referenced from stackoverflow.com */
@@ -41315,6 +41326,8 @@ var Game = function (_React$Component) {
         value: function render() {
             var _this2 = this;
 
+            console.log("Render inside root");
+            console.log(this.state);
             return _react2.default.createElement(
                 _reactstrap.Container,
                 null,
@@ -41371,7 +41384,9 @@ var Game = function (_React$Component) {
             var _this3 = this;
 
             if (this.state.prev) {
-                if (prevValue.tile.value != this.state.prev.value) {
+                console.log("This state previous is present");
+                if (prevValue.tile.value != this.state.prev.tile.value) {
+                    console.log("Values not matched");
                     prevValue.tile.display = true;
                     this.setState(this.state, function () {
                         var thisObj = this;
@@ -41382,13 +41397,17 @@ var Game = function (_React$Component) {
                         }, 1000);
                     });
                 } else {
+                    console.log("Values matched");
                     this.channel.push("guess", { clicked: prevValue, prev: false }).receive("ok", function (view) {
                         return _this3.gotView(view);
                     });
                 }
-            } else this.channel.push("guess", { clicked: prevValue, prev: true }).receive("ok", function (view) {
-                return _this3.gotView(view);
-            });
+            } else {
+                console.log("This state previous is absent");
+                this.channel.push("guess", { clicked: prevValue, prev: true }).receive("ok", function (view) {
+                    return _this3.gotView(view);
+                });
+            }
         }
     }]);
 
@@ -41441,7 +41460,6 @@ var Table = function (_React$Component3) {
         value: function render() {
             var _this6 = this;
 
-            console.log(this.state.arrayElements);
             return this.state.arrayElements.map(function (elm, i) {
                 return _react2.default.createElement(
                     _reactstrap.Row,
