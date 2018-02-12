@@ -10,7 +10,7 @@ defmodule MemoryWeb.GamesChannel do
                |> assign(:name, name)
 
       GameBackup.save(socket.assigns[:name], game)
-      {:ok, %{"join" => name, "game" => game}, socket}
+      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
     end
 
   # Channels can be used in a request/response fashion
@@ -20,7 +20,7 @@ defmodule MemoryWeb.GamesChannel do
     game = Game.nextState(map, guess, setPrevValue?)
     socket = assign(socket, :game, game)
     GameBackup.save(socket.assigns[:name], game)
-    {:reply, {:ok, %{ "game" => game}}, socket}
+    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
   # Sends a fresh state of a game
@@ -30,7 +30,7 @@ defmodule MemoryWeb.GamesChannel do
              |> assign(:game, game)
 
     GameBackup.save(socket.assigns[:name], game)
-    {:reply, {:ok, %{ "game" => game}}, socket}
+    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
   # It is also common to receive messages from the client and

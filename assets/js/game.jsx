@@ -46,24 +46,29 @@ class Game extends React.Component {
 
     handleClick(prevValue) {
         this.state.clickable = false;
-        if (this.state.prev) {
-            if (prevValue.tile.value != this.state.prev.tile.value) {
-                prevValue.tile.display = true;
-                this.setState(this.state, function () {
-                    let thisObj = this;
-                    setTimeout(function () {
-                        thisObj.channel.push("guess", {clicked: thisObj.state.prev, prev: false})
-                            .receive("ok", (view) => thisObj.gotView(view));
-                    }, 1000)
-                })
+        if (this.state.next) {
+            if (prevValue.i != this.state.next.i || prevValue.j != this.state.next.j) {
+                let oldValue = {i: this.state.prev.i, j: this.state.prev.j};
+                this.channel
+                    .push("guess", {clicked: [prevValue], prev: false})
+                    .receive("ok", (view) => {
+                        this.gotView(view);
+                        this.state.clickable = false;
+                        let thisObj = this;
+                        setTimeout(function () {
+                            thisObj.channel
+                                .push("guess", {clicked: [oldValue, prevValue], prev: false})
+                                .receive("ok", (view) => thisObj.gotView(view));
+                        }, 1000)
+                    });
             }
             else {
-                this.channel.push("guess", {clicked: prevValue, prev: false})
+                this.channel.push("guess", {clicked: [prevValue], prev: false})
                     .receive("ok", (view) => this.gotView(view));
             }
         }
         else {
-            this.channel.push("guess", {clicked: prevValue, prev: true})
+            this.channel.push("guess", {clicked: [prevValue], prev: true})
                 .receive("ok", (view) => this.gotView(view));
         }
     }
@@ -121,8 +126,8 @@ class Tile extends React.Component {
             <div className="col-3 border"
                  onClick={() => !this.state.tile.display &&
                      this.props.rootObj.state.clickable &&
-                     this.props.rootObj.handleClick(this.state)}>
-                {this.state.tile.display ? this.state.tile.value : " "}
+                     this.props.rootObj.handleClick(this.state.location)}>
+                {this.state.tile.value}
             </div>
         );
     }

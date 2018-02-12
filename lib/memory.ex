@@ -46,67 +46,128 @@ defmodule Memory.Game do
           )
         ]
       ),
-      :clickable => true
+      :clickable => true,
+      :next => false,
+      :prev => false
     }
-
   end
 
   def nextState(game, key, true) do
-    arrayElements = Map.get(game, :arrayElements)
-    index1 = Map.get(Map.get(key, "location"), "i")
-    index2 = Map.get(Map.get(key, "location"), "j")
+    arrayElements = nextState(Map.get(game, :arrayElements), key)
+    #    arrayElements = Map.get(game, :arrayElements)
+    currElement = Enum.at(
+      Enum.at(
+        arrayElements,
+        Enum.at(key, 0)
+        |> Map.get("i")
+      ),
+      Enum.at(key, 0)
+      |> Map.get("j")
+    )
 
-    arrayElements = arrayElements
-                    |> Enum.with_index
-                    |> Enum.map (fn {x, i} ->
-      if (i == index1) do
-        x
-        |> Enum.with_index
-        |> Enum.map(
-             fn {y, j} ->
-               if (j == index2) do
-                 Map.update!(y, :display, fn (x) -> x == false end)
-               else
-                 y
-               end
-             end
-           )
-      else
-        x
-      end
-                                 end)
+    location = arrayElements
+               |> Enum.with_index
+               |> Enum.filter(
+                    fn {x, i} ->
+                      Enum.any?(x, fn (x) -> x.value == currElement.value && !x.display end)
+                    end
+                  )
+               |> Enum.at(0)
+               |> Tuple.to_list
+
+    locationMap = %{
+      i: Enum.at(location, 1),
+      j: Enum.at(location, 0)
+         |> Enum.with_index
+         |> Enum.filter(fn {x, j} -> (x.value == currElement.value && !x.display) end)
+         |> Enum.at(0)
+         |> Kernel.elem(1)
+    }
+
+    IO.inspect locationMap
 
     Map.update!(game, :arrayElements, fn (x) -> arrayElements end)
-    |> Map.update!(:score, fn (x) -> x + 1 end)
-    |> Map.update(:prev, key, fn (x) -> key end)
+    |> Map.update!(
+         :score,
+         fn (x) ->
+
+             x + 1
+         end
+       )
+    |> Map.update(:next, key, fn (x) -> locationMap end)
+    |> Map.update(:prev, key, fn (x) -> Enum.at(key, 0) end)
+  end
+
+  def client_view(game) do
+    %{
+      score: game.score,
+      arrayElements: filter(game.arrayElements),
+      clickable: true,
+      next: game.next,
+      prev: game.prev
+    }
+  end
+
+  def filter(arrayElements) do
+    Enum.map(
+      arrayElements,
+      fn (ele) ->
+        Enum.map(
+          ele,
+          fn (x) -> if (!x.display) do
+                      %{value: " ", display: x.display}
+                    else
+                      x
+                    end
+          end
+        )
+      end
+    )
   end
 
   def nextState(game, key, false) do
-    arrayElements = Map.get(game, :arrayElements)
-    index1 = Map.get(Map.get(key, "location"), "i")
-    index2 = Map.get(Map.get(key, "location"), "j")
-    arrayElements = arrayElements
-                    |> Enum.with_index
-                    |> Enum.map (fn {x, i} ->
-      if (i == index1) do
-        x
-        |> Enum.with_index
-        |> Enum.map(
-             fn {y, j} ->
-               if (j == index2) do
-                 Map.update!(y, :display, fn (x) -> x == false end)
-               else
-                 y
-               end
-             end
-           )
-      else
-        x
-      end
-                                 end)
-
+    arrayElements = nextState(Map.get(game, :arrayElements), key)
     Map.update!(game, :arrayElements, fn (x) -> arrayElements end)
-    |> Map.update!(:score, fn (x) -> x + 1 end)
+    |> Map.update!(:score, fn (x) -> if (rem(x, 2) == 1) do
+                                       x + 1
+                                     else
+                                       x
+                                     end end)
+    |> Map.update!(:next, fn (x) -> false end)
     |> Map.update!(:prev, fn (x) -> false end)
   end
+
+  def nextState(arrayElements, key) do
+    List.foldl(
+      key,
+      arrayElements,
+      fn (l, al) ->
+        index1 = Map.get(l, "i")
+        index2 = Map.get(l, "j")
+        al
+        |> Enum.with_index
+        |> Enum.map (fn {x, i} ->
+          if (i == index1) do
+            x
+            |> Enum.with_index
+            |> Enum.map(
+                 fn {y, j} ->
+                   if (j == index2) do
+                     Map.update!(y, :display, fn (x) -> x == false end)
+                   else
+                     y
+                   end
+                 end
+               )
+          else
+            x
+          end
+                     end)
+      end
+    )
+  end
+
 end
+
+
+

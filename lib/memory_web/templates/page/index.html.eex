@@ -5,5 +5,3 @@
     <p><a href="" onClick="this.href='/memory/' + document.getElementById('game-input').value">Enter</a>
   </div>
 </div>
-
-
