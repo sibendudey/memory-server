@@ -54,7 +54,7 @@ defmodule Memory.Game do
 
   def nextState(game, key, true) do
     arrayElements = nextState(Map.get(game, :arrayElements), key)
-    #    arrayElements = Map.get(game, :arrayElements)
+
     currElement = Enum.at(
       Enum.at(
         arrayElements,
@@ -84,13 +84,10 @@ defmodule Memory.Game do
          |> Kernel.elem(1)
     }
 
-    IO.inspect locationMap
-
     Map.update!(game, :arrayElements, fn (x) -> arrayElements end)
     |> Map.update!(
          :score,
          fn (x) ->
-
              x + 1
          end
        )
